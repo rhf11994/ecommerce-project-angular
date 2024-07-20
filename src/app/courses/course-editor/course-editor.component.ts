@@ -13,7 +13,7 @@ import { CanComponentDeactivate } from 'src/app/core/guards/can-deactivate.guard
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CourseEditorComponent implements OnInit, CanComponentDeactivate {
-  public newCourse: Course;
+  public newCoursee: Course;
   public editedCourse: Course;
   public isSaved: boolean;
 
@@ -26,18 +26,18 @@ export class CourseEditorComponent implements OnInit, CanComponentDeactivate {
   ngOnInit() {
     this.editedCourse = null;
     this.isSaved = false;
-    this.newCourse = new Course(this.generateCourseId());
+    this.newCoursee = new Course(this.generateCourseId());
     this.route.data.subscribe(
       ({course}) => {
         if (course) {
           this.editedCourse = course;
-          this.newCourse = { ...course };
+          this.newCoursee = { ...course };
         }
     });
   }
 
   public get authors(): string {
-    return this.newCourse.authors
+    return this.newCoursee.authors
       .map(({firstName, lastName}) => lastName ?
         `${firstName} ${lastName}` :
         firstName)
@@ -45,7 +45,7 @@ export class CourseEditorComponent implements OnInit, CanComponentDeactivate {
   }
 
   public set authors(value: string) {
-    this.newCourse.authors = value.split(',')
+    this.newCoursee.authors = value.split(',')
       .map((author: string) => {
         const [firstName = '', lastName = ''] = author.trim().split(' ').map((item) => item && item.trim());
 
@@ -59,10 +59,10 @@ export class CourseEditorComponent implements OnInit, CanComponentDeactivate {
 
   public saveCourse(): void {
     console.log('Changes saved successfully.');
-    console.log(this.newCourse);
+    console.log(this.newCoursee);
     this.editedCourse ?
-      this.courseService.updateCourse(this.editedCourse, this.newCourse) :
-      this.courseService.createCourse(this.newCourse);
+      this.courseService.updateCourse(this.editedCourse, this.newCoursee) :
+      this.courseService.createCourse(this.newCoursee);
 
     this.isSaved = true;
 
@@ -75,19 +75,19 @@ export class CourseEditorComponent implements OnInit, CanComponentDeactivate {
 
   public setNewDate(newDate: string): void {
     console.log(newDate);
-    this.newCourse.date = newDate;
+    this.newCoursee.date = newDate;
   }
 
   public setDuration(newDuration: number): void {
     console.log(newDuration);
-    this.newCourse.duration = newDuration;
+    this.newCoursee.duration = newDuration;
   }
 
   public canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
     const unsavedChanges = !this.isSaved &&
       this.editedCourse &&
       Object.keys(this.editedCourse).some((key: string) => {
-        return this.editedCourse[key] !== this.newCourse[key];
+        return this.editedCourse[key] !== this.newCoursee[key];
     });
 
     return unsavedChanges ?
